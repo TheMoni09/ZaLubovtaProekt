@@ -121,8 +121,14 @@ export default defineComponent({
             }
         };
 
-        // Load profile data when component is mounted
-        onMounted(loadUserProfile);
+        onMounted(async () => {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) {
+                // User is already logged in, redirect to home
+                router.push('/')
+            }
+            loadUserProfile()
+        });
 
         return {
             name,

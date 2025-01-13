@@ -32,7 +32,7 @@ import { useRouter } from "vue-router"; // Import the useRouter function
 export default defineComponent({
 
   components: {
-    QuillEditor: defineAsyncComponent(() => 
+    QuillEditor: defineAsyncComponent(() =>
       import('../components/Editor.vue')
     )
   },
@@ -56,7 +56,7 @@ export default defineComponent({
       created_at: string;
     }
 
-    
+
 
     const newPostContent = ref("");
     const newPostTitle = ref("");
@@ -113,6 +113,14 @@ export default defineComponent({
       }
     };
 
+    onMounted(async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        // User is already logged in, redirect to home
+        router.push('/')
+      }
+    });
+
     return {
       newPostContent,
       newPostTitle,
@@ -129,8 +137,8 @@ export default defineComponent({
 .editor {
   margin-bottom: 10px;
   height: 150px;
-  overflow:auto;
-  resize:none;
+  overflow: auto;
+  resize: none;
   outline: none;
 }
 

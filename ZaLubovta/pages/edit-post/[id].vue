@@ -12,11 +12,8 @@
 
     <div v-if="!loading && post" class="edit-post-form">
       <input type="text" class="title" v-model="post.title" placeholder="Заглавие">
-      <textarea
-        v-model="post.description"
-        placeholder="Редактирайте публикацията..."
-        rows="5" style="resize: none; height: 150px;"
-      ></textarea>
+      <textarea v-model="post.description" placeholder="Редактирайте публикацията..." rows="5"
+        style="resize: none; height: 150px;"></textarea>
       <div class="post-actions">
         <button @click="savePost" :disabled="!post.description || !post.title">
           Запази Промените
@@ -97,6 +94,14 @@ export default defineComponent({
       }
     };
 
+    onMounted(async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        // User is already logged in, redirect to home
+        router.push('/')
+      }
+    });
+
     // Go back to the posts list
     const goBack = () => {
       router.push("/my-posts");
@@ -115,7 +120,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .title {
   border: 1px solid #d1d9e6;
   outline: none;

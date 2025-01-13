@@ -152,6 +152,12 @@ export default defineComponent({
       if (userUUID.value) {
         await loadPosts(); // Fetch posts after user UUID is set
       }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        // User is already logged in, redirect to home
+        router.push('/')
+      }
     });
 
     return {
