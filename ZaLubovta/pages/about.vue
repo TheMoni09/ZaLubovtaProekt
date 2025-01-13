@@ -57,7 +57,7 @@ export default defineComponent({
       {
         name: "Мартин Динев",
         role: "Презентатор",
-        image: "/images/marto.JPG", // Replace with actual image URL
+        image: "/images/marto2.JPG", // Replace with actual image URL
       },
     ]);
 
