@@ -11,4 +11,8 @@
 
 <script lang="ts">
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
+export default {
+  name: 'DefaultLayout',
+};
 </script>
