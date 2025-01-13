@@ -11,13 +11,14 @@
     </div>
 
     <div v-if="!loading && post" class="edit-post-form">
+      <input type="text" class="title" v-model="post.title" placeholder="Заглавие">
       <textarea
         v-model="post.description"
         placeholder="Редактирайте публикацията..."
-        rows="5"
+        rows="5" style="resize: none; height: 150px;"
       ></textarea>
       <div class="post-actions">
-        <button @click="savePost" :disabled="!post.description">
+        <button @click="savePost" :disabled="!post.description || !post.title">
           Запази Промените
         </button>
         <button @click="goBack">Отказ</button>
@@ -84,6 +85,7 @@ export default defineComponent({
             .from("Posts")
             .update({
               description: post.value.description,
+              title: post.value.title
             })
             .eq("id", post.value.id);
 
@@ -113,6 +115,18 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+.title {
+  border: 1px solid #d1d9e6;
+  outline: none;
+  border-radius: 5px;
+  width: 100%;
+  height: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
 .post-container {
   max-width: 800px;
   margin: 0 auto;

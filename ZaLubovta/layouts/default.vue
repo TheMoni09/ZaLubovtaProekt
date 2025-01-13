@@ -8,3 +8,7 @@
     <Footer />
   </div>
 </template>
+
+<script lang="ts">
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+</script>

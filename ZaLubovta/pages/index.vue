@@ -44,20 +44,21 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="posts.length > 0" class="text-center mt-4">
+      <div class="text-center mt-4">
         <button
           v-if="currentPage > 1"
-          @click="loadPosts(currentPage - 1)"
-          class="px-4 py-2 bg-blue-500 text-white rounded-md"
+          @click="navigateToPage(currentPage - 1)"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md pageBtn"
+          style="margin-right: 10px;"
         >
-          Предишна
+          Предишна страница
         </button>
         <button
           v-if="hasNextPage"
-          @click="loadPosts(currentPage + 1)"
-          class="px-4 py-2 bg-blue-500 text-white rounded-md ml-2"
+          @click="navigateToPage(currentPage + 1)"
+          class="px-4 py-2 bg-blue-500 text-white rounded-md ml-2 pageBtn"
         >
-          Следваща
+          Следваща страница
         </button>
       </div>
     </div>
@@ -65,7 +66,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
 
 // Define post type
 interface Post {
@@ -81,11 +84,13 @@ interface Post {
 const posts = ref<Post[]>([]); // Define the type of posts as an array of Post objects
 const loading = ref(true);
 const error = ref<string | null>(null);
-const currentPage = ref(1); // Track the current page
-const totalPages = ref(0); // Track the total number of pages
-const postsPerPage = 10; // Number of posts per page
+  const route = useRoute();
+  const currentPage = ref(Number(route.query.page) || 1);
+  const totalPages = ref(0); // Track the total number of pages
+const postsPerPage = 3; // Number of posts per page
 const hasNextPage = ref(false); // Track if there's a next page
 const router = useRouter();
+
 
 // Supabase client
 const supabase = useSupabaseClient();
@@ -108,26 +113,29 @@ const OpenPost = (postId: number) => {
 const loadPosts = async (page: number) => {
   loading.value = true;
   try {
-    const {
-      data,
-      error: fetchError,
-      count,
-    } = await supabase
+    const { data, error: fetchError, count } = await supabase
       .from("Posts")
       .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
-      .range((page - 1) * postsPerPage, page * postsPerPage - 1); // Fetch posts for the current page
+      .range((page - 1) * postsPerPage, page * postsPerPage - 1);
 
     if (fetchError) throw fetchError;
 
-    posts.value = data || []; // Assign fetched posts or an empty array
-    totalPages.value = Math.ceil((count || 0) / postsPerPage); // Calculate total pages
-    hasNextPage.value = page < totalPages.value; // Check if there's a next page
+    posts.value = data || [];
+    totalPages.value = Math.ceil((count || 0) / postsPerPage);
+    hasNextPage.value = page < totalPages.value;
+    currentPage.value = page;
   } catch (err) {
     error.value = (err as Error).message;
   } finally {
     loading.value = false;
   }
+};
+
+const navigateToPage = (page: number) => {
+  router.push({ path: "/", query: { page: page.toString() } }).then(() => {
+    window.scrollTo(0, 0);
+  });
 };
 
 // Format dates
@@ -143,9 +151,37 @@ const formatDate = (dateString: string) => {
 onMounted(() => {
   loadPosts(currentPage.value); // Load posts for the first page
 });
+
+watch(
+  () => route.query.page,
+  (newPage) => {
+    const page = Number(newPage);
+    if (page > 0 && page !== currentPage.value) {
+      loadPosts(page);
+      currentPage.value = page;
+    }
+  }
+);
+
 </script>
 
 <style scoped>
+.pageBtn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pageBtn:hover {
+  background-color: #2563eb;
+  scale: 1.05;
+}
+
 .container {
   font-family: "Roboto", serif;
   font-optical-sizing: auto;

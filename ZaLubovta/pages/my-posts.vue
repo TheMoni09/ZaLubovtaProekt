@@ -6,7 +6,7 @@
     </div>
 
     <div class="post-header">
-      <h1>Моят Публикации</h1>
+      <h1>Моите публикации</h1>
       <p>
         Тук можете да създадете нови публикации, да ги редактирате или
         изтривате.
@@ -14,36 +14,31 @@
     </div>
 
     <div v-if="posts.length === 0" class="no-posts">
-      <p>Няма публикации още.</p>
-      <button @click="showCreatePostForm = true" class="create-post-btn">
-        + Създай Публикация
+      <p>Нямате направени публикации.</p>
+      <button @click="createPost" class="create-post-btn">
+        + Създай публикация
       </button>
     </div>
 
-    <div v-if="showCreatePostForm" class="create-post-form">
-      <textarea
-        v-model="newPostContent"
-        placeholder="Напишете своята публикация..."
-        rows="5"
-      ></textarea>
-      <div class="post-actions">
-        <button @click="createPost" :disabled="!newPostContent">
-          Създай Публикация
-        </button>
-        <button @click="showCreatePostForm = false">Отказ</button>
-      </div>
+    <div v-if="posts.length > 0">
+      <button @click="createPost" class="create-post-btn">
+        + Създай публикация
+      </button>
     </div>
 
     <div v-if="posts.length > 0" class="posts-list">
-      <h2>Вашите Публикации</h2>
+      <h2>Вашите публикации</h2>
       <ul>
-        <li v-for="(post, index) in posts" :key="index" class="post-item">
+        <li v-for="post in posts" :key="post.id" class="post-item">
           <div class="post-content">
-            <p>{{ post.title }}</p>
+            <h2>{{ post.title }}</h2>
+            <p class="description text-gray-600 mb-4 font-light">
+              {{ post.description }}
+            </p>
           </div>
           <div class="post-actions">
             <button @click="editPost(post.id)">Редактиране</button>
-            <button @click="deletePost(index)" class="delete-btn">
+            <button @click="deletePost(post.id)" class="delete-btn">
               Изтриване
             </button>
           </div>
@@ -80,32 +75,18 @@ export default defineComponent({
     const supabase = useSupabaseClient();
 
     // Function to create a post
-    const createPost = async () => {
-      if (newPostContent.value) {
-        try {
-          const postData = {
-            title: newPostContent.value,
-            description: newPostContent.value,
-            created_by: authStore.user?.user_metadata.name,
-            user_id: authStore.user?.id,
-          };
+    const createPost = () => {
+      loading.value = true;
 
-          const { data, error } = await supabase
-            .from("Posts")
-            .upsert(postData) // upsert expects an object with the correct shape
-            .select();
-
-          if (error) {
-            throw new Error(error.message);
-          }
-
-          newPostContent.value = "";
-          showCreatePostForm.value = false;
-          loadPosts();
-        } catch (err) {
-          console.error("Error creating post:", err);
-        }
-      }
+      router
+        .push(`/create-post`)
+        .then(() => {
+          loading.value = false;
+        })
+        .catch((error) => {
+          console.error("Navigation error:", error);
+          loading.value = false;
+        });
     };
 
     // Function to edit a post, navigating to the edit page
@@ -188,6 +169,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  /* Allow text to break into multiple lines */
+}
+
 .post-container {
   max-width: 800px;
   margin: 0 auto;
@@ -224,11 +216,12 @@ export default defineComponent({
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .create-post-btn:hover {
   background-color: #2563eb;
+  scale: 1.05;
 }
 
 .create-post-form textarea {
@@ -297,6 +290,12 @@ ul {
   font-size: 1.1rem;
   color: #4b5563;
   line-height: 1.6;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.post-content h2 {
+  text-align: left;
 }
 
 .post-actions {

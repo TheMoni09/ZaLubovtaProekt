@@ -24,7 +24,7 @@
           <NuxtLink to="/my-posts" class="dropdown-item font-light"
             >Моите постове</NuxtLink
           >
-          <NuxtLink to="/settings" class="dropdown-item font-light">Настройки</NuxtLink>
+          <!-- <NuxtLink to="/settings" class="dropdown-item font-light">Настройки</NuxtLink> -->
           <button @click="handleLogout" class="dropdown-item font-bold">Изход</button>
         </div>
       </div>
@@ -52,7 +52,6 @@ const props = defineProps({
 const navItems = [
   { name: "Главен проект", path: "/" },
   { name: "За проекта", path: "/about" },
-  { name: "Контакти", path: "/contact" },
 ];
 
 // Auth store and dropdown state

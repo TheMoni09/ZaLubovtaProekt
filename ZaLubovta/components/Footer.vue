@@ -4,7 +4,6 @@
       <p>&copy; {{ currentYear }} ZaLubovta. All rights reserved.</p>
       <div class="footer-buttons">
         <NuxtLink to="/about" class="footer-button">About</NuxtLink>
-        <NuxtLink to="/contact" class="footer-button">Contact</NuxtLink>
       </div>
     </div>
   </footer>
