@@ -53,12 +53,7 @@ export default defineComponent({
         name: "Денис Илийчев",
         role: "Презентатор",
         image: "/images/denis.JPG", // Replace with actual image URL
-      },
-      {
-        name: "Мартин Динев",
-        role: "Презентатор",
-        image: "/images/marto2.JPG", // Replace with actual image URL
-      },
+      }
     ]);
 
     return {
